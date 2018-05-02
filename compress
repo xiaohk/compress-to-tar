@@ -1,0 +1,31 @@
+#!/usr/bin/env osascript
+
+tell application "Finder"
+	
+	-- Get the selections
+	set concatString to ""
+	set fileSelections to selection
+	
+	-- Concatenate all selected filenames into one string
+	repeat with selectedFile in fileSelections
+		set filename to name of selectedFile as string
+		set concatString to concatString & space & quoted form of filename
+	end repeat
+	
+	-- Get the current working directory
+	set dirPath to the POSIX path of (container of item 1 of fileSelections as alias)
+	set dirPath to quoted form of dirPath
+	
+	-- Get the output filename
+	set tarName to ""
+	if (count of fileSelections) > 1 then
+		set tarName to "archive.tar.gz"
+	else
+		set tarName to (name of (item 1 of fileSelections) as string) & ".tar.gz"
+	end if
+	set tarName to quoted form of tarName
+	
+end tell
+
+-- Do the compression using shell
+do shell script "cd " & dirPath & " && tar -czf " & tarName & space & concatString
